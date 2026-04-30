@@ -28,7 +28,7 @@ classDiagram
     }
     class PremiumUser {
         +int credits
-        +generate_image() void
+        -generate_image() void
         +use_ai_prompt() void
     }
     class Main {
@@ -55,8 +55,8 @@ Extends `User`. Owns the credit balance and exposes two public methods:
 
 | Method | Signature | Behaviour |
 |---|---|---|
-| `generate_image` | `public void generate_image()` | Subtracts 5 from `credits`, then prints a success message. |
-| `use_ai_prompt` | `public void use_ai_prompt()` | Calls `generate_image()` only when `credits > 5`; otherwise does nothing. |
+| `generate_image` | `private void generate_image()` | Subtracts 5 from `credits`, then prints a success message. Internal use only — not callable from outside the class. |
+| `use_ai_prompt` | `public void use_ai_prompt()` | The sole public entry point for image generation. Calls `generate_image()` only when `credits > 5`; otherwise does nothing. |
 
 ### `Main` (entry point)
 
@@ -64,7 +64,7 @@ Contains the `public static void main(String[] args)` method. Responsibilities:
 
 1. Instantiate `PremiumUser`.
 2. Call `use_ai_prompt()`.
-3. Call `generate_image()` directly.
+3. Call `use_ai_prompt()` again.
 
 ---
 
@@ -118,7 +118,7 @@ The current specification does not require error handling for insufficient credi
 |---|---|---|
 | `credits == 5` | `use_ai_prompt()` does NOT call `generate_image()` (guard condition is `> 5`) | Boundary case; credits must be strictly greater than 5. |
 | `credits == 0` or negative | `use_ai_prompt()` does NOT call `generate_image()` | No explicit lower bound enforced by spec. |
-| `generate_image()` called directly with 0 credits | Credits become negative | Spec does not prohibit this; direct calls bypass the guard. |
+| `generate_image()` called directly with 0 credits | N/A — method is `private`; direct external calls are a compile error | Encapsulation enforced by access modifier. |
 
 No exceptions are thrown; the system uses conditional logic rather than exception-based flow control.
 

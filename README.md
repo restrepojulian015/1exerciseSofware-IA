@@ -38,8 +38,8 @@ A concrete subclass that owns a credit balance and exposes two public methods.
 | Member | Type | Description |
 |---|---|---|
 | `credits` | `public int` | Usage budget, initialized to `100` |
-| `generate_image()` | `void` | Deducts 5 credits and prints a success message |
-| `use_ai_prompt()` | `void` | Guards `generate_image()` — only calls it when `credits > 5` |
+| `generate_image()` | `void` *(private)* | Deducts 5 credits and prints a success message — internal use only |
+| `use_ai_prompt()` | `void` | The only public entry point for image generation; guards `generate_image()` — only calls it when `credits > 5` |
 
 **Credit guard logic:**
 
@@ -48,14 +48,14 @@ credits > 5  →  generate_image() is called  (credits decremented by 5)
 credits ≤ 5  →  nothing happens
 ```
 
-Calling `generate_image()` directly bypasses the guard, so credits can go below zero if called directly with an insufficient balance.
+Calling `generate_image()` directly is no longer possible from outside the class — it is `private`. All image generation must go through `use_ai_prompt()`, which enforces the credit guard.
 
 ### `Main`
 
 The runnable entry point. It:
 1. Creates a `PremiumUser` (starts with 100 credits)
 2. Calls `use_ai_prompt()` — credits drop to 95
-3. Calls `generate_image()` directly — credits drop to 90
+3. Calls `use_ai_prompt()` again — credits drop to 90
 
 ---
 
